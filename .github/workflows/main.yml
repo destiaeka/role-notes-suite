@@ -1,0 +1,37 @@
+name: push to ECR
+
+on:
+  push:
+    branches: ["main"]
+
+env:
+  AWS_REGION: us-east-1
+  ECR_REPOSITORY: role-notes-suite
+  AWS_ACCOUNT_ID: 428713192206
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v5.1.0
+          aws-access-key-id: ${{ secrets.AWS_ACCES_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws_session_token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: login to aws ECR
+        run: |
+          aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 428713192206.dkr.ecr.us-east-1.amazonaws.com
+      
+      - name: build & tag image
+        run:
+          IMAGE_URL: "${{ env.AWS_ACCOUNT_ID}}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:${{ github.sha }}"
+          docker build -t $IMAGE_URL .
+          echo "IMAGE_URL=$IMAGE_URL" >> $GITHUB_ENV
+
+      - name: push to ECR
+        run: |
+          docker push ${{ env.IMAGE_URL }}
