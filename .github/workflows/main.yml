@@ -29,7 +29,7 @@ jobs:
       
       - name: build & tag image
         run: |
-          IMAGE_URL: "${{ env.AWS_ACCOUNT_ID}}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:${{ github.sha }}"
+          IMAGE_URL="${{ env.AWS_ACCOUNT_ID}}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:${{ github.sha }}"
           docker build -t $IMAGE_URL .
           echo "IMAGE_URL=$IMAGE_URL" >> $GITHUB_ENV
 
