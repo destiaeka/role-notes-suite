@@ -28,7 +28,7 @@ jobs:
           aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 428713192206.dkr.ecr.us-east-1.amazonaws.com
       
       - name: build & tag image
-        run:
+        run: |
           IMAGE_URL: "${{ env.AWS_ACCOUNT_ID}}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.ECR_REPOSITORY }}:${{ github.sha }}"
           docker build -t $IMAGE_URL .
           echo "IMAGE_URL=$IMAGE_URL" >> $GITHUB_ENV
